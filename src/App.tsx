@@ -251,12 +251,11 @@ function HeaderSection({ onEditProfile, profile }: { onEditProfile: () => void; 
           <span className="brand-mark">
             <Bot size={22} />
           </span>
-          <h1>AI求职助手</h1>
-          <span className="brand-subtitle">AI 产品经理转型分析</span>
+          <div className="brand-text">
+            <h1>AI求职助手</h1>
+            <span className="brand-subtitle">AI 产品经理转型分析</span>
+          </div>
         </div>
-        <p className="hero-copy">
-          粘贴真实岗位 JD，快速看清市场在招聘什么能力，并得到适合 2 年传统产品经理转型 AI PM 的项目建议。
-        </p>
       </div>
       <ProfileCard onEditProfile={onEditProfile} profile={profile} />
     </section>
