@@ -5,6 +5,7 @@ import {
   BriefcaseBusiness,
   CheckCircle2,
   ClipboardList,
+  Cpu,
   FileText,
   Gauge,
   Lightbulb,
@@ -14,9 +15,10 @@ import {
   Sparkles,
   Target,
   UserRound,
+  X,
 } from 'lucide-react';
 import { analyzeJobDescriptions, defaultProfile } from './analysis';
-import type { AbilityRequirement, AnalysisResult, KeywordStat, ProjectRecommendation } from './types';
+import type { AbilityRequirement, AnalysisResult, CandidateProfile, KeywordStat, ProjectRecommendation } from './types';
 
 const sampleInput = `岗位名称：AI 数据产品经理
 薪资：20-30K
@@ -36,15 +38,35 @@ const sampleInput = `岗位名称：AI 数据产品经理
 
 const tabs = ['关键词', '能力要求', '项目推荐', '市场洞察', '求职建议'];
 
+const profileOptions = {
+  workExperience: ['应届/实习', '1年以内', '1-3年', '3-5年', '5年以上'],
+  aiExperience: ['无经验', '有相关经验'],
+  previousDomains: ['工具类产品', '内容 / 社区', '电商 / 交易', '生活服务', '企业服务 / SaaS', '教育 / 其他'],
+  familiarTech: ['AI 大模型（LLM）', 'RAG / 知识库', 'Agent / 智能体', '数据分析 / BI', '推荐算法', '计算机视觉', '自然语言处理'],
+  strengths: ['需求分析', '产品设计', '原型设计', '项目管理', '数据分析', '增长 / 运营', '商业化 / 盈利设计'],
+  targetRole: ['AI 产品经理', '产品经理（AI 方向）', '产品经理', '其他'],
+};
+
+function yearsFromWorkExperience(workExperience: string): number {
+  if (workExperience === '应届/实习') return 0;
+  if (workExperience === '1年以内') return 1;
+  if (workExperience === '1-3年') return 2;
+  if (workExperience === '3-5年') return 4;
+  return 5;
+}
+
 function App() {
   const [input, setInput] = useState('');
   const [submittedText, setSubmittedText] = useState('');
   const [error, setError] = useState('');
+  const [profile, setProfile] = useState<CandidateProfile>(defaultProfile);
+  const [draftProfile, setDraftProfile] = useState<CandidateProfile>(defaultProfile);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   const result = useMemo<AnalysisResult | null>(() => {
     if (!submittedText.trim()) return null;
-    return analyzeJobDescriptions(submittedText);
-  }, [submittedText]);
+    return analyzeJobDescriptions(submittedText, profile);
+  }, [profile, submittedText]);
 
   const handleAnalyze = () => {
     if (!input.trim()) {
@@ -62,6 +84,27 @@ function App() {
     setSubmittedText(sampleInput);
   };
 
+  const openProfileModal = () => {
+    setDraftProfile(profile);
+    setIsProfileModalOpen(true);
+  };
+
+  const closeProfileModal = () => {
+    setDraftProfile(profile);
+    setIsProfileModalOpen(false);
+  };
+
+  const saveProfile = () => {
+    setProfile({
+      ...draftProfile,
+      yearsExperience: yearsFromWorkExperience(draftProfile.workExperience),
+      representativeProject: draftProfile.previousDomains.includes('出行类产品') || draftProfile.previousDomains.includes('工具类产品')
+        ? '车来了 App'
+        : `${draftProfile.previousDomains[0] ?? '过往'}项目`,
+    });
+    setIsProfileModalOpen(false);
+  };
+
   const averageSalary = result?.averageSalaryK ? `${result.averageSalaryK}K` : '待识别';
   const topMatch = result?.abilityRequirements[0]?.count
     ? Math.min(96, 58 + result.abilityRequirements[0].count * 5)
@@ -69,7 +112,7 @@ function App() {
 
   return (
     <main className="app-shell">
-      <HeaderSection />
+      <HeaderSection onEditProfile={openProfileModal} profile={profile} />
       <InputPanel
         error={error}
         input={input}
@@ -118,11 +161,19 @@ function App() {
         <span>内容由 AI 生成，仅供参考</span>
         <span>有反馈？告诉我们</span>
       </footer>
+      {isProfileModalOpen ? (
+        <ProfileModal
+          draftProfile={draftProfile}
+          onClose={closeProfileModal}
+          onSave={saveProfile}
+          onUpdate={setDraftProfile}
+        />
+      ) : null}
     </main>
   );
 }
 
-function HeaderSection() {
+function HeaderSection({ onEditProfile, profile }: { onEditProfile: () => void; profile: CandidateProfile }) {
   return (
     <section className="hero-panel">
       <div className="brand-block">
@@ -137,33 +188,37 @@ function HeaderSection() {
           粘贴真实岗位 JD，快速看清市场在招聘什么能力，并得到适合 2 年传统产品经理转型 AI PM 的项目建议。
         </p>
       </div>
-      <ProfileCard />
+      <ProfileCard onEditProfile={onEditProfile} profile={profile} />
     </section>
   );
 }
 
-function ProfileCard() {
+function ProfileCard({ onEditProfile, profile }: { onEditProfile: () => void; profile: CandidateProfile }) {
   return (
-    <aside className="profile-card" aria-label="默认用户画像">
+    <aside className="profile-card" aria-label="当前用户画像">
       <div className="profile-card__title">
         <UserRound size={17} />
-        默认用户画像
+        当前用户画像
       </div>
       <dl>
         <div>
           <dt>经验</dt>
-          <dd>{defaultProfile.yearsExperience} 年传统 PM</dd>
+          <dd>{profile.workExperience} 产品经验</dd>
+        </div>
+        <div>
+          <dt>AI 产品</dt>
+          <dd>{profile.aiExperience}</dd>
         </div>
         <div>
           <dt>背景</dt>
-          <dd>{defaultProfile.previousDomains.join(' / ')}</dd>
+          <dd>{profile.previousDomains.join(' / ') || '未选择'}</dd>
         </div>
         <div>
-          <dt>代表项目</dt>
-          <dd>{defaultProfile.representativeProject}</dd>
+          <dt>期望职位</dt>
+          <dd>{profile.targetRole}</dd>
         </div>
       </dl>
-      <button className="link-button" type="button">
+      <button className="link-button" type="button" onClick={onEditProfile}>
         编辑画像
         <span aria-hidden>›</span>
       </button>
@@ -215,6 +270,176 @@ function InputPanel({
         </button>
       </div>
     </section>
+  );
+}
+
+function ProfileModal({
+  draftProfile,
+  onClose,
+  onSave,
+  onUpdate,
+}: {
+  draftProfile: CandidateProfile;
+  onClose: () => void;
+  onSave: () => void;
+  onUpdate: (profile: CandidateProfile) => void;
+}) {
+  const setSingle = (key: 'workExperience' | 'aiExperience' | 'targetRole', value: string) => {
+    onUpdate({
+      ...draftProfile,
+      [key]: value,
+      yearsExperience: key === 'workExperience' ? yearsFromWorkExperience(value) : draftProfile.yearsExperience,
+    });
+  };
+
+  const toggleMulti = (key: 'previousDomains' | 'familiarTech' | 'strengths', value: string) => {
+    const current = draftProfile[key];
+    const next = current.includes(value) ? current.filter((item) => item !== value) : [...current, value];
+    onUpdate({ ...draftProfile, [key]: next });
+  };
+
+  return (
+    <div className="modal-backdrop" role="presentation">
+      <section className="profile-modal" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title">
+        <button className="modal-close" type="button" aria-label="关闭用户画像弹窗" onClick={onClose}>
+          <X size={22} />
+        </button>
+        <header className="modal-header">
+          <h2 id="profile-modal-title">选择你的用户画像</h2>
+          <p>完善信息后，我们将提供更贴合你的分析结果</p>
+        </header>
+
+        <div className="profile-form-grid">
+          <ProfileOptionGroup icon={<BriefcaseBusiness size={15} />} title="工作年限">
+            <SegmentGrid>
+              {profileOptions.workExperience.map((option) => (
+                <OptionButton
+                  active={draftProfile.workExperience === option}
+                  key={option}
+                  label={option}
+                  onClick={() => setSingle('workExperience', option)}
+                />
+              ))}
+            </SegmentGrid>
+          </ProfileOptionGroup>
+
+          <ProfileOptionGroup icon={<Bot size={15} />} title="是否有 AI 产品经验">
+            <SegmentGrid columns={2}>
+              {profileOptions.aiExperience.map((option) => (
+                <OptionButton
+                  active={draftProfile.aiExperience === option}
+                  key={option}
+                  label={option}
+                  onClick={() => setSingle('aiExperience', option)}
+                />
+              ))}
+            </SegmentGrid>
+          </ProfileOptionGroup>
+
+          <ProfileOptionGroup icon={<Sparkles size={15} />} title="过往产品类型（可多选）">
+            <CheckGrid>
+              {profileOptions.previousDomains.map((option) => (
+                <CheckOption
+                  checked={draftProfile.previousDomains.includes(option)}
+                  key={option}
+                  label={option}
+                  onClick={() => toggleMulti('previousDomains', option)}
+                />
+              ))}
+            </CheckGrid>
+          </ProfileOptionGroup>
+
+          <ProfileOptionGroup icon={<Cpu size={15} />} title="熟悉的技术 / 领域（可多选）">
+            <CheckGrid>
+              {profileOptions.familiarTech.map((option) => (
+                <CheckOption
+                  checked={draftProfile.familiarTech.includes(option)}
+                  key={option}
+                  label={option}
+                  onClick={() => toggleMulti('familiarTech', option)}
+                />
+              ))}
+            </CheckGrid>
+          </ProfileOptionGroup>
+
+          <ProfileOptionGroup icon={<Gauge size={15} />} title="擅长的产品模块（可多选）">
+            <CheckGrid>
+              {profileOptions.strengths.map((option) => (
+                <CheckOption
+                  checked={draftProfile.strengths.includes(option)}
+                  key={option}
+                  label={option}
+                  onClick={() => toggleMulti('strengths', option)}
+                />
+              ))}
+            </CheckGrid>
+          </ProfileOptionGroup>
+
+          <ProfileOptionGroup icon={<Target size={15} />} title="期望职位">
+            <div className="role-list">
+              {profileOptions.targetRole.map((option) => (
+                <OptionButton
+                  active={draftProfile.targetRole === option}
+                  key={option}
+                  label={option}
+                  onClick={() => setSingle('targetRole', option)}
+                />
+              ))}
+            </div>
+          </ProfileOptionGroup>
+        </div>
+
+        <footer className="modal-actions">
+          <button className="secondary-button" type="button" onClick={onClose}>
+            取消
+          </button>
+          <button className="primary-button" type="button" onClick={onSave}>
+            保存并应用
+          </button>
+        </footer>
+      </section>
+    </div>
+  );
+}
+
+function ProfileOptionGroup({ children, icon, title }: { children: React.ReactNode; icon: React.ReactNode; title: string }) {
+  return (
+    <section className="profile-option-group">
+      <h3>
+        {icon}
+        {title}
+      </h3>
+      {children}
+    </section>
+  );
+}
+
+function SegmentGrid({ children, columns }: { children: React.ReactNode; columns?: number }) {
+  return (
+    <div className="segment-grid" style={columns ? { gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` } : undefined}>
+      {children}
+    </div>
+  );
+}
+
+function CheckGrid({ children }: { children: React.ReactNode }) {
+  return <div className="check-grid">{children}</div>;
+}
+
+function OptionButton({ active, label, onClick }: { active: boolean; label: string; onClick: () => void }) {
+  return (
+    <button className={`option-button ${active ? 'active' : ''}`} type="button" onClick={onClick}>
+      {label}
+    </button>
+  );
+}
+
+function CheckOption({ checked, label, onClick }: { checked: boolean; label: string; onClick: () => void }) {
+  return (
+    <button className={`check-option ${checked ? 'checked' : ''}`} type="button" onClick={onClick}>
+      <span aria-hidden>{checked ? '✓' : ''}</span>
+      {label}
+    </button>
   );
 }
 

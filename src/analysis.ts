@@ -9,9 +9,13 @@ import type {
 } from './types';
 
 export const defaultProfile: CandidateProfile = {
+  workExperience: '1-3年',
   yearsExperience: 2,
-  aiExperience: '0 AI 产品项目经验',
+  aiExperience: '有相关经验',
   previousDomains: ['工具类产品', '出行类产品'],
+  familiarTech: ['AI 大模型（LLM）', 'RAG / 知识库'],
+  strengths: ['原型设计', '数据分析'],
+  targetRole: 'AI 产品经理',
   representativeProject: '车来了 App',
 };
 
@@ -238,13 +242,17 @@ function recommendProfileBasedProjects(
   const abilityNames = abilities.map((ability) => ability.name);
   const keywordNames = keywords.map((keyword) => keyword.keyword);
   const has = (...names: string[]) => names.some((name) => abilityNames.includes(name) || keywordNames.includes(name));
+  const domainText = profile.previousDomains.join(' / ') || '过往产品';
+  const projectName = profile.representativeProject || `${domainText}项目`;
+  const strengthText = profile.strengths.slice(0, 2).join('、') || '产品设计、数据分析';
+  const techText = profile.familiarTech.slice(0, 2).join('、') || 'AI 产品基础能力';
 
   const recommendations: ProjectRecommendation[] = [];
 
   if (has('RAG / 知识库', '问答', 'RAG')) {
     recommendations.push({
-      title: '基于知识库的 AI 出行问答助手',
-      reason: `JD 强调 ${pickEvidence(keywords, ['RAG', '问答', 'LLM'])}，可把 ${profile.representativeProject} 的公交线路、站点、延误说明抽象成知识库问答场景。`,
+      title: `基于${domainText}经验的 AI 知识库问答助手`,
+      reason: `JD 强调 ${pickEvidence(keywords, ['RAG', '问答', 'LLM'])}，可把 ${projectName} 的业务内容抽象成知识库问答场景，并结合你熟悉的 ${techText} 展示转型能力。`,
       deliverables: ['知识库结构与更新流程', '问答链路原型', '召回与答案质量评测表'],
       matchedAbilities: ['RAG / 知识库', 'AI 应用设计', '模型评测'],
     });
@@ -252,8 +260,8 @@ function recommendProfileBasedProjects(
 
   if (has('Prompt 工程', 'Agent 产品设计')) {
     recommendations.push({
-      title: 'AI 通勤规划 Agent',
-      reason: `岗位提到 ${pickEvidence(keywords, ['Prompt', 'Agent', '工作流'])}，适合用出行背景设计一个能拆解通勤目标、调用天气/路线/偏好信息的智能体项目。`,
+      title: `${domainText}场景 AI Agent`,
+      reason: `岗位提到 ${pickEvidence(keywords, ['Prompt', 'Agent', '工作流'])}，适合基于你的 ${domainText} 背景设计一个能拆解用户目标、调用业务信息并完成任务闭环的智能体项目。`,
       deliverables: ['任务拆解流程图', 'Prompt 版本记录', '工具调用与异常兜底说明'],
       matchedAbilities: ['Prompt 工程', 'Agent 产品设计', '项目推进'],
     });
@@ -262,7 +270,7 @@ function recommendProfileBasedProjects(
   if (has('数据分析', '模型评测', 'A/B 测试')) {
     recommendations.push({
       title: 'AI 产品数据看板与评测体系',
-      reason: `JD 中数据和效果相关要求较突出，可补齐从传统 PM 到 AI PM 最容易被追问的指标、实验和模型质量判断能力。`,
+      reason: `JD 中数据和效果相关要求较突出，你选择的优势包含 ${strengthText}，适合强化指标、实验和模型质量判断能力。`,
       deliverables: ['核心指标树', '埋点与实验方案', '模型效果评测集和复盘模板'],
       matchedAbilities: ['数据分析', '模型评测', '产品方法论'],
     });
@@ -280,7 +288,7 @@ function recommendProfileBasedProjects(
   if (recommendations.length < 3) {
     recommendations.push({
       title: 'AI 产品经理转型作品集复盘',
-      reason: `结合 ${profile.yearsExperience} 年传统产品经验，把车来了 App 的需求分析、用户路径和数据指标改写成 AI 产品视角案例。`,
+      reason: `结合 ${profile.workExperience} 产品经验，把 ${projectName} 的需求分析、用户路径和数据指标改写成 ${profile.targetRole} 视角案例。`,
       deliverables: ['AI 化机会点清单', 'PRD 与原型', '上线前后指标对比假设'],
       matchedAbilities: ['产品方法论', 'AI 应用设计', '数据分析'],
     });
@@ -379,12 +387,16 @@ function buildJobSearchAdvice(
 ): string[] {
   const topAbilities = abilities.slice(0, 3).map((ability) => ability.name);
   const projectTitle = projects[0]?.title ?? 'AI 产品作品集项目';
+  const domainText = profile.previousDomains.join(' / ') || '过往产品';
+  const strengthText = profile.strengths.slice(0, 2).join('、') || '产品设计、数据分析';
+  const techText = profile.familiarTech.slice(0, 2).join('、') || 'AI 产品基础能力';
+  const projectName = profile.representativeProject || `${domainText}项目`;
 
   return [
-    `简历开头不要只写传统 PM，建议改成“${profile.yearsExperience} 年工具 / 出行产品经验，正在补齐 ${topAbilities.join('、') || 'AI 产品设计'} 能力”。`,
+    `简历开头建议写成“${profile.workExperience} ${domainText}经验，目标 ${profile.targetRole}，具备 ${strengthText} 基础，正在强化 ${topAbilities.join('、') || techText}”。`,
     `优先完成「${projectTitle}」，用 PRD、原型、指标和评测材料证明你能做 AI 产品，而不是只会描述概念。`,
     `面试准备围绕 ${topAbilities.join('、') || '需求分析、数据分析、AI 应用设计'} 展开，每个能力至少准备一个“场景-方案-指标-复盘”的回答。`,
-    `把 ${profile.representativeProject} 的经历迁移到 AI 语境：强调用户路径、实时信息、异常处理和数据指标，再补充 AI 化改造方案。`,
+    `把 ${projectName} 的经历迁移到 AI 语境：强调用户路径、异常处理、数据指标和 ${techText}，再补充 AI 化改造方案。`,
   ];
 }
 
