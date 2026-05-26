@@ -497,26 +497,34 @@ textarea:focus {
 }
 
 .analysis-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   margin: 8px 0 0;
   border-bottom: 1px solid var(--line);
+  background: rgba(247, 251, 248, 0.94);
+  backdrop-filter: blur(12px);
 }
 
-.analysis-tabs span {
+.analysis-tabs button {
   position: relative;
   padding: 16px 10px 13px;
+  border: 0;
   color: #44564b;
+  background: transparent;
   text-align: center;
   font-size: 14px;
   font-weight: 800;
 }
 
-.analysis-tabs span.active {
+.analysis-tabs button:hover,
+.analysis-tabs button.active {
   color: var(--green);
 }
 
-.analysis-tabs span.active::after {
+.analysis-tabs button.active::after {
   position: absolute;
   right: 22%;
   bottom: -1px;
@@ -525,6 +533,10 @@ textarea:focus {
   border-radius: 999px;
   background: var(--green);
   content: "";
+}
+
+.card[id] {
+  scroll-margin-top: 78px;
 }
 
 .dashboard-grid {

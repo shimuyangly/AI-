@@ -36,7 +36,13 @@ const sampleInput = `岗位名称：AI 数据产品经理
 岗位要求：
 熟悉 LLM、Prompt 工程、知识库问答和数据分析，有 PRD、原型和项目推进经验。`;
 
-const tabs = ['关键词', '能力要求', '项目推荐', '市场洞察', '求职建议'];
+const tabs = [
+  { label: 'Top关键词', targetId: 'top-keywords' },
+  { label: '能力要求', targetId: 'core-abilities' },
+  { label: '项目推荐', targetId: 'profile-projects' },
+  { label: '市场洞察', targetId: 'market-insights' },
+  { label: '求职建议', targetId: 'job-advice' },
+];
 
 const profileOptions = {
   workExperience: ['应届/实习', '1年以内', '1-3年', '3-5年', '5年以上'],
@@ -82,6 +88,13 @@ function App() {
     setInput(sampleInput);
     setError('');
     setSubmittedText(sampleInput);
+  };
+
+  const scrollToSection = (targetId: string) => {
+    document.getElementById(targetId)?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
   };
 
   const openProfileModal = () => {
@@ -138,19 +151,24 @@ function App() {
 
           <nav className="analysis-tabs" aria-label="分析模块导航">
             {tabs.map((tab, index) => (
-              <span className={index === 0 ? 'active' : ''} key={tab}>
-                {tab}
-              </span>
+              <button
+                className={index === 0 ? 'active' : ''}
+                key={tab.targetId}
+                type="button"
+                onClick={() => scrollToSection(tab.targetId)}
+              >
+                {tab.label}
+              </button>
             ))}
           </nav>
 
           <section className="dashboard-grid">
-            <KeywordCard keywords={result.topKeywords} />
-            <AbilityCard abilities={result.abilityRequirements} />
-            <ProjectCard title="基于原产品项目推荐" subtitle="与岗位能力精准相关" projects={result.profileBasedProjectRecommendations} />
-            <ProjectCard title="综合项目推荐" subtitle="小白友好，进阶挑战" projects={result.generalProjectRecommendations} />
-            <ListCard icon={<Lightbulb size={18} />} title="市场洞察" items={result.marketInsights} />
-            <ListCard icon={<Target size={18} />} title="求职建议" items={result.jobSearchAdvice} />
+            <KeywordCard id="top-keywords" keywords={result.topKeywords} />
+            <AbilityCard id="core-abilities" abilities={result.abilityRequirements} />
+            <ProjectCard id="profile-projects" title="基于画像项目推荐" subtitle="与岗位能力精准相关" projects={result.profileBasedProjectRecommendations} />
+            <ProjectCard id="general-projects" title="综合项目推荐" subtitle="小白友好，进阶挑战" projects={result.generalProjectRecommendations} />
+            <ListCard id="market-insights" icon={<Lightbulb size={18} />} title="市场洞察" items={result.marketInsights} />
+            <ListCard id="job-advice" icon={<Target size={18} />} title="求职建议" items={result.jobSearchAdvice} />
           </section>
         </>
       ) : (
@@ -469,11 +487,11 @@ function MetricCard({
   );
 }
 
-function KeywordCard({ keywords }: { keywords: KeywordStat[] }) {
+function KeywordCard({ id, keywords }: { id: string; keywords: KeywordStat[] }) {
   const max = Math.max(...keywords.map((item) => item.count), 1);
 
   return (
-    <article className="card equal-height-card">
+    <article className="card equal-height-card" id={id}>
       <CardTitle icon={<BarChart3 size={18} />} title="Top 关键词" />
       {keywords.length ? (
         <div className="keyword-list scrollable-card-body">
@@ -496,9 +514,9 @@ function KeywordCard({ keywords }: { keywords: KeywordStat[] }) {
   );
 }
 
-function AbilityCard({ abilities }: { abilities: AbilityRequirement[] }) {
+function AbilityCard({ abilities, id }: { abilities: AbilityRequirement[]; id: string }) {
   return (
-    <article className="card equal-height-card">
+    <article className="card equal-height-card" id={id}>
       <CardTitle icon={<CheckCircle2 size={18} />} title="候选人核心能力要求" />
       {abilities.length ? (
         <div className="ability-list scrollable-card-body">
@@ -524,16 +542,18 @@ function AbilityCard({ abilities }: { abilities: AbilityRequirement[] }) {
 }
 
 function ProjectCard({
+  id,
   projects,
   subtitle,
   title,
 }: {
+  id: string;
   projects: ProjectRecommendation[];
   subtitle: string;
   title: string;
 }) {
   return (
-    <article className="card equal-height-card">
+    <article className="card equal-height-card" id={id}>
       <CardTitle icon={<Sparkles size={18} />} title={title} />
       <div className="project-tabs">
         <span className="active">{subtitle}</span>
@@ -561,9 +581,9 @@ function ProjectCard({
   );
 }
 
-function ListCard({ icon, title, items }: { icon: React.ReactNode; title: string; items: string[] }) {
+function ListCard({ icon, id, title, items }: { icon: React.ReactNode; id: string; title: string; items: string[] }) {
   return (
-    <article className="card list-card">
+    <article className="card list-card" id={id}>
       <CardTitle icon={icon} title={title} />
       <ul className="check-list">
         {items.map((item) => (
