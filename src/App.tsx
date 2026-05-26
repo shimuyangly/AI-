@@ -4,7 +4,6 @@ import {
   BriefcaseBusiness,
   CheckCircle2,
   ClipboardList,
-  FileText,
   Lightbulb,
   LineChart,
   Search,
@@ -13,7 +12,7 @@ import {
   UserRound,
 } from 'lucide-react';
 import { analyzeJobDescriptions, defaultProfile } from './analysis';
-import type { AbilityRequirement, AnalysisResult, JobPosting, KeywordStat, ProjectRecommendation } from './types';
+import type { AbilityRequirement, AnalysisResult, KeywordStat, ProjectRecommendation } from './types';
 
 const sampleInput = `岗位名称：AI 产品经理
 薪资：25-40K·14薪
@@ -80,10 +79,6 @@ function App() {
               <dd>{defaultProfile.yearsExperience} 年传统 PM</dd>
             </div>
             <div>
-              <dt>AI 项目</dt>
-              <dd>{defaultProfile.aiExperience}</dd>
-            </div>
-            <div>
               <dt>背景</dt>
               <dd>{defaultProfile.previousDomains.join(' / ')}</dd>
             </div>
@@ -127,7 +122,7 @@ function App() {
             <MetricCard icon={<BriefcaseBusiness size={20} />} label="岗位数量" value={`${result.jobCount}`} note="已拆分解析" />
             <MetricCard icon={<LineChart size={20} />} label="平均薪资" value={averageSalary} note={`${result.parsedSalaryCount} 个岗位可解析`} />
             <MetricCard icon={<Sparkles size={20} />} label="推荐项目数" value={`${result.projectRecommendations.length}`} note="按 JD 能力动态生成" />
-            <MetricCard icon={<UserRound size={20} />} label="用户画像" value="2 年 PM" note="工具 / 出行 / 0 AI 项目" />
+            <MetricCard icon={<UserRound size={20} />} label="用户画像" value="2 年 PM" note="工具 / 出行背景" />
           </section>
 
           <section className="dashboard-grid">
@@ -146,14 +141,13 @@ function App() {
               title="求职建议"
               items={result.jobSearchAdvice}
             />
-            <JobDetailCard jobs={result.jobs} />
           </section>
         </>
       ) : (
         <section className="empty-state">
-          <FileText size={34} />
+          <ClipboardList size={34} />
           <h2>等待岗位内容</h2>
-          <p>粘贴 JD 后，系统会生成关键词、能力要求、市场洞察、项目推荐和岗位明细。</p>
+          <p>粘贴 JD 后，系统会生成关键词、能力要求、市场洞察、项目推荐和求职建议。</p>
         </section>
       )}
     </main>
@@ -273,35 +267,6 @@ function ListCard({
           <li key={item}>{item}</li>
         ))}
       </ol>
-    </article>
-  );
-}
-
-function JobDetailCard({ jobs }: { jobs: JobPosting[] }) {
-  return (
-    <article className="card wide-card">
-      <CardTitle icon={<FileText size={20} />} title="岗位明细和解析状态" />
-      <div className="job-table">
-        {jobs.map((job) => (
-          <section className="job-row" key={job.id}>
-            <div>
-              <h3>{job.title}</h3>
-              <p>{job.rawText.slice(0, 120)}{job.rawText.length > 120 ? '...' : ''}</p>
-            </div>
-            <div className="job-side">
-              <strong>{job.salary.label}</strong>
-              <span className={job.parseStatus === 'success' ? 'status-success' : 'status-partial'}>
-                {job.parseStatus === 'success' ? '解析成功' : '部分解析'}
-              </span>
-              <div className="tag-row compact">
-                {job.keywords.slice(0, 4).map((keyword) => (
-                  <span key={keyword.keyword}>{keyword.keyword}</span>
-                ))}
-              </div>
-            </div>
-          </section>
-        ))}
-      </div>
     </article>
   );
 }
