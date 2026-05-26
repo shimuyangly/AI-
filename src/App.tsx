@@ -263,33 +263,29 @@ function HeaderSection({ onEditProfile, profile }: { onEditProfile: () => void; 
 }
 
 function ProfileCard({ onEditProfile, profile }: { onEditProfile: () => void; profile: CandidateProfile }) {
+  const profileItems = [
+    { icon: <UserRound size={18} />, label: '产品经验', value: profile.workExperience },
+    { icon: <Bot size={18} />, label: 'AI 产品经验', value: profile.aiExperience },
+    { icon: <BriefcaseBusiness size={18} />, label: '过往产品类型', value: profile.previousDomains.join(' / ') || '未选择' },
+    { icon: <Target size={18} />, label: '期望职位', value: profile.targetRole },
+  ];
+
   return (
     <aside className="profile-card" aria-label="当前用户画像">
-      <div className="profile-card__title">
-        <UserRound size={17} />
-        当前用户画像
+      <div className="profile-summary">
+        {profileItems.map((item) => (
+          <div className="profile-summary__item" key={item.label}>
+            <span className="profile-summary__icon">{item.icon}</span>
+            <div>
+              <strong>{item.value}</strong>
+              <span>{item.label}</span>
+            </div>
+          </div>
+        ))}
       </div>
-      <dl>
-        <div>
-          <dt>经验</dt>
-          <dd>{profile.workExperience} 产品经验</dd>
-        </div>
-        <div>
-          <dt>AI 产品</dt>
-          <dd>{profile.aiExperience}</dd>
-        </div>
-        <div>
-          <dt>背景</dt>
-          <dd>{profile.previousDomains.join(' / ') || '未选择'}</dd>
-        </div>
-        <div>
-          <dt>期望职位</dt>
-          <dd>{profile.targetRole}</dd>
-        </div>
-      </dl>
-      <button className="link-button" type="button" onClick={onEditProfile}>
+      <button className="profile-edit-button" type="button" onClick={onEditProfile}>
+        <PenLine size={16} />
         编辑画像
-        <span aria-hidden>›</span>
       </button>
     </aside>
   );
