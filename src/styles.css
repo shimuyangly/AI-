@@ -269,6 +269,13 @@ textarea:focus {
   padding: 22px;
 }
 
+.equal-height-card {
+  display: flex;
+  flex-direction: column;
+  height: 460px;
+  min-height: 460px;
+}
+
 .wide-card {
   grid-column: 1 / -1;
 }
@@ -287,6 +294,31 @@ textarea:focus {
 .job-table {
   display: grid;
   gap: 14px;
+}
+
+.scrollable-card-body {
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 6px;
+  overscroll-behavior: contain;
+}
+
+.scrollable-card-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollable-card-body::-webkit-scrollbar-track {
+  background: #eef3ee;
+  border-radius: 999px;
+}
+
+.scrollable-card-body::-webkit-scrollbar-thumb {
+  background: #b9c7bd;
+  border-radius: 999px;
+}
+
+.scrollable-card-body::-webkit-scrollbar-thumb:hover {
+  background: #96aa9d;
 }
 
 .keyword-meta {
@@ -516,6 +548,11 @@ textarea:focus {
   .metric-grid,
   .project-grid {
     grid-template-columns: 1fr;
+  }
+
+  .equal-height-card {
+    height: 420px;
+    min-height: 420px;
   }
 
   .job-side {

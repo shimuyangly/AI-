@@ -171,10 +171,10 @@ function KeywordCard({ keywords }: { keywords: KeywordStat[] }) {
   const max = Math.max(...keywords.map((item) => item.count), 1);
 
   return (
-    <article className="card">
+    <article className="card equal-height-card">
       <CardTitle icon={<BarChart3 size={20} />} title="Top 关键词" />
       {keywords.length ? (
-        <div className="keyword-list">
+        <div className="keyword-list scrollable-card-body">
           {keywords.map((item) => (
             <div className="keyword-row" key={item.keyword}>
               <div className="keyword-meta">
@@ -196,10 +196,10 @@ function KeywordCard({ keywords }: { keywords: KeywordStat[] }) {
 
 function AbilityCard({ abilities }: { abilities: AbilityRequirement[] }) {
   return (
-    <article className="card">
+    <article className="card equal-height-card">
       <CardTitle icon={<CheckCircle2 size={20} />} title="候选人能力要求" />
       {abilities.length ? (
-        <div className="ability-list">
+        <div className="ability-list scrollable-card-body">
           {abilities.slice(0, 6).map((ability) => (
             <div className="ability-item" key={ability.name}>
               <div className="ability-head">
