@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   BarChart3,
   Bot,
@@ -44,6 +44,8 @@ const tabs = [
   { label: '求职建议', targetId: 'job-advice' },
 ];
 
+const tabTargetIds = tabs.map((tab) => tab.targetId);
+
 const profileOptions = {
   workExperience: ['应届/实习', '1年以内', '1-3年', '3-5年', '5年以上'],
   aiExperience: ['无经验', '有相关经验'],
@@ -68,6 +70,8 @@ function App() {
   const [profile, setProfile] = useState<CandidateProfile>(defaultProfile);
   const [draftProfile, setDraftProfile] = useState<CandidateProfile>(defaultProfile);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [activeTabId, setActiveTabId] = useState(tabs[0].targetId);
+  const tabClickLockUntil = useRef(0);
 
   const result = useMemo<AnalysisResult | null>(() => {
     if (!submittedText.trim()) return null;
@@ -91,11 +95,59 @@ function App() {
   };
 
   const scrollToSection = (targetId: string) => {
+    tabClickLockUntil.current = Date.now() + 1100;
+    setActiveTabId(targetId);
     document.getElementById(targetId)?.scrollIntoView({
       behavior: 'smooth',
       block: 'start',
     });
   };
+
+  useEffect(() => {
+    if (!result) {
+      setActiveTabId(tabs[0].targetId);
+      return;
+    }
+
+    const getActiveId = () => {
+      const pageBottom = window.scrollY + window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      if (pageBottom >= documentHeight - 8) return 'job-advice';
+
+      const sectionPositions = [...tabTargetIds, 'general-projects']
+        .map((id) => {
+          const element = document.getElementById(id);
+          if (!element) return null;
+          return {
+            id,
+            top: element.getBoundingClientRect().top,
+          };
+        })
+        .filter((item): item is { id: string; top: number } => Boolean(item));
+
+      const anchorLine = 110;
+      const current = sectionPositions.reduce((closest, section) => {
+        if (!closest) return section;
+        return Math.abs(section.top - anchorLine) < Math.abs(closest.top - anchorLine) ? section : closest;
+      }, sectionPositions[0]);
+      return current?.id === 'general-projects' ? 'profile-projects' : current?.id;
+    };
+
+    const handleScroll = () => {
+      if (Date.now() < tabClickLockUntil.current) return;
+      const nextActiveId = getActiveId();
+      if (nextActiveId) setActiveTabId(nextActiveId);
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
+  }, [result]);
 
   const openProfileModal = () => {
     setDraftProfile(profile);
@@ -152,7 +204,7 @@ function App() {
           <nav className="analysis-tabs" aria-label="分析模块导航">
             {tabs.map((tab, index) => (
               <button
-                className={index === 0 ? 'active' : ''}
+                className={activeTabId === tab.targetId ? 'active' : ''}
                 key={tab.targetId}
                 type="button"
                 onClick={() => scrollToSection(tab.targetId)}
