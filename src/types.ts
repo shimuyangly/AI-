@@ -50,7 +50,8 @@ export interface AnalysisResult {
   parsedSalaryCount: number;
   topKeywords: KeywordStat[];
   abilityRequirements: AbilityRequirement[];
-  projectRecommendations: ProjectRecommendation[];
+  profileBasedProjectRecommendations: ProjectRecommendation[];
+  generalProjectRecommendations: ProjectRecommendation[];
   marketInsights: string[];
   jobSearchAdvice: string[];
   jobs: JobPosting[];

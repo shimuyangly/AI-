@@ -121,14 +121,14 @@ function App() {
           <section className="metric-grid" aria-label="数据概览">
             <MetricCard icon={<BriefcaseBusiness size={20} />} label="岗位数量" value={`${result.jobCount}`} note="已拆分解析" />
             <MetricCard icon={<LineChart size={20} />} label="平均薪资" value={averageSalary} note={`${result.parsedSalaryCount} 个岗位可解析`} />
-            <MetricCard icon={<Sparkles size={20} />} label="推荐项目数" value={`${result.projectRecommendations.length}`} note="按 JD 能力动态生成" />
             <MetricCard icon={<UserRound size={20} />} label="用户画像" value="2 年 PM" note="工具 / 出行背景" />
           </section>
 
           <section className="dashboard-grid">
             <KeywordCard keywords={result.topKeywords} />
             <AbilityCard abilities={result.abilityRequirements} />
-            <ProjectCard projects={result.projectRecommendations} />
+            <ProjectCard title="基于原产品项目推荐" projects={result.profileBasedProjectRecommendations} />
+            <ProjectCard title="综合项目推荐" projects={result.generalProjectRecommendations} />
             <ListCard
               className="insight-card"
               icon={<Lightbulb size={20} />}
@@ -222,11 +222,11 @@ function AbilityCard({ abilities }: { abilities: AbilityRequirement[] }) {
   );
 }
 
-function ProjectCard({ projects }: { projects: ProjectRecommendation[] }) {
+function ProjectCard({ title, projects }: { title: string; projects: ProjectRecommendation[] }) {
   return (
-    <article className="card wide-card">
-      <CardTitle icon={<Sparkles size={20} />} title="项目推荐" />
-      <div className="project-grid">
+    <article className="card equal-height-card">
+      <CardTitle icon={<Sparkles size={20} />} title={title} />
+      <div className="project-list scrollable-card-body">
         {projects.map((project) => (
           <section className="project-item" key={project.title}>
             <h3>{project.title}</h3>

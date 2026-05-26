@@ -69,7 +69,8 @@ export function analyzeJobDescriptions(input: string, profile = defaultProfile):
     ? roundToOneDecimal(salaryValues.reduce((sum, value) => sum + value, 0) / salaryValues.length)
     : undefined;
 
-  const projectRecommendations = recommendProjects(abilityRequirements, topKeywords, profile);
+  const profileBasedProjectRecommendations = recommendProfileBasedProjects(abilityRequirements, topKeywords, profile);
+  const generalProjectRecommendations = recommendGeneralProjects(abilityRequirements, topKeywords);
 
   return {
     jobCount: jobs.length,
@@ -77,9 +78,10 @@ export function analyzeJobDescriptions(input: string, profile = defaultProfile):
     parsedSalaryCount: salaryValues.length,
     topKeywords,
     abilityRequirements,
-    projectRecommendations,
+    profileBasedProjectRecommendations,
+    generalProjectRecommendations,
     marketInsights: buildMarketInsights(jobs, abilityRequirements, topKeywords, averageSalaryK),
-    jobSearchAdvice: buildJobSearchAdvice(abilityRequirements, projectRecommendations, profile),
+    jobSearchAdvice: buildJobSearchAdvice(abilityRequirements, profileBasedProjectRecommendations, profile),
     jobs,
   };
 }
@@ -228,7 +230,7 @@ function aggregateAbilities(jobs: JobPosting[]): AbilityRequirement[] {
     .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'zh-CN'));
 }
 
-function recommendProjects(
+function recommendProfileBasedProjects(
   abilities: AbilityRequirement[],
   keywords: KeywordStat[],
   profile: CandidateProfile,
@@ -281,6 +283,63 @@ function recommendProjects(
       reason: `结合 ${profile.yearsExperience} 年传统产品经验，把车来了 App 的需求分析、用户路径和数据指标改写成 AI 产品视角案例。`,
       deliverables: ['AI 化机会点清单', 'PRD 与原型', '上线前后指标对比假设'],
       matchedAbilities: ['产品方法论', 'AI 应用设计', '数据分析'],
+    });
+  }
+
+  return recommendations.slice(0, 4);
+}
+
+function recommendGeneralProjects(
+  abilities: AbilityRequirement[],
+  keywords: KeywordStat[],
+): ProjectRecommendation[] {
+  const abilityNames = abilities.map((ability) => ability.name);
+  const keywordNames = keywords.map((keyword) => keyword.keyword);
+  const has = (...names: string[]) => names.some((name) => abilityNames.includes(name) || keywordNames.includes(name));
+  const recommendations: ProjectRecommendation[] = [];
+
+  if (has('RAG / 知识库', '问答', 'RAG')) {
+    recommendations.push({
+      title: '零代码知识库问答 Demo',
+      reason: `岗位强调 ${pickEvidence(keywords, ['RAG', '问答', 'LLM'])}，小白可以先用飞书文档、Notion 或公开资料搭一个可演示的知识库问答流程。`,
+      deliverables: ['资料库目录', '问答流程截图', '10 条测试问题与答案评分'],
+      matchedAbilities: ['RAG / 知识库', 'AI 应用设计', '模型评测'],
+    });
+  }
+
+  if (has('Prompt 工程', 'Agent 产品设计', '工作流')) {
+    recommendations.push({
+      title: 'Prompt 任务助手小实验',
+      reason: `JD 出现 ${pickEvidence(keywords, ['Prompt', 'Agent', '工作流'])}，可以从提示词模板和流程编排入手，不需要先写代码。`,
+      deliverables: ['3 版 Prompt 对比', '输入输出样例', '失败案例和改进记录'],
+      matchedAbilities: ['Prompt 工程', 'Agent 产品设计'],
+    });
+  }
+
+  if (has('数据分析', '模型评测', 'A/B 测试')) {
+    recommendations.push({
+      title: 'AI 功能效果评测表',
+      reason: '岗位关注数据、实验或评测时，最容易上手的作品是用表格定义指标、样本、评分标准和复盘结论。',
+      deliverables: ['指标定义表', '人工评测样本', '结论复盘页'],
+      matchedAbilities: ['数据分析', '模型评测'],
+    });
+  }
+
+  if (has('商业化理解', '增长产品', 'B 端产品')) {
+    recommendations.push({
+      title: 'AI 产品商业化一页纸',
+      reason: `JD 提到 ${pickEvidence(keywords, ['商业化', '增长', 'B 端'])}，适合用轻量方案展示目标用户、付费理由、转化路径和试点计划。`,
+      deliverables: ['目标用户画像', '价值主张画布', '试点转化路径'],
+      matchedAbilities: ['商业化理解', '增长产品', 'B 端产品'],
+    });
+  }
+
+  if (recommendations.length < 3) {
+    recommendations.push({
+      title: 'AI 产品需求分析练习',
+      reason: '当 JD 能力信号不够集中时，先做一个小白友好的需求分析作品，证明你能把岗位要求拆成用户场景和产品方案。',
+      deliverables: ['用户场景拆解', 'PRD 大纲', '低保真原型'],
+      matchedAbilities: ['产品方法论', 'AI 应用设计'],
     });
   }
 
