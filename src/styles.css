@@ -315,7 +315,7 @@ textarea:focus {
 
 .metric-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
   margin: 18px 0 0;
 }
@@ -518,17 +518,6 @@ textarea:focus {
   display: block;
   font-size: 28px;
   line-height: 1;
-}
-
-.metric-ring {
-  position: absolute;
-  right: 24px;
-  width: 56px;
-  height: 56px;
-  border: 8px solid #dceee5;
-  border-top-color: var(--green);
-  border-right-color: var(--green);
-  border-radius: 50%;
 }
 
 .analysis-tabs {

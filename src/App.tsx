@@ -249,9 +249,6 @@ function App() {
   };
 
   const averageSalary = result?.averageSalaryK ? `${result.averageSalaryK}K` : '待识别';
-  const topMatch = result?.abilityRequirements[0]?.count
-    ? Math.min(96, 58 + result.abilityRequirements[0].count * 5)
-    : 72;
 
   return (
     <main className="app-shell">
@@ -270,12 +267,6 @@ function App() {
           <section className="metric-grid" aria-label="数据概览">
             <MetricCard icon={<BriefcaseBusiness size={22} />} label="岗位数量" value={`${result.jobCount}`} />
             <MetricCard icon={<LineChart size={22} />} label="平均薪资" value={averageSalary} />
-            <MetricCard
-              icon={<Gauge size={22} />}
-              label="用户画像匹配度"
-              value={`${topMatch}%`}
-              showRing
-            />
           </section>
 
           <nav className="analysis-tabs" aria-label="分析模块导航">
@@ -586,12 +577,10 @@ function CheckOption({ checked, label, onClick }: { checked: boolean; label: str
 function MetricCard({
   icon,
   label,
-  showRing,
   value,
 }: {
   icon: React.ReactNode;
   label: string;
-  showRing?: boolean;
   value: string;
 }) {
   return (
@@ -601,7 +590,6 @@ function MetricCard({
         <p>{label}</p>
         <strong>{value}</strong>
       </div>
-      {showRing ? <span className="metric-ring" aria-hidden /> : null}
     </article>
   );
 }
