@@ -45,6 +45,7 @@ const tabs = [
 ];
 
 const tabTargetIds = tabs.map((tab) => tab.targetId);
+const maxJobCount = 50;
 
 const profileOptions = {
   workExperience: ['1年以内', '1-3年', '3-5年', '应届生', '实习生'],
@@ -119,6 +120,21 @@ function yearsFromWorkExperience(workExperience: string): number {
   return 2;
 }
 
+function estimateJobCount(text: string): number {
+  const normalized = text.replace(/\r/g, '').trim();
+  if (!normalized) return 0;
+
+  const explicitTitleCount = normalized.match(/(?:^|\n)\s*(?:岗位名称|职位名称|岗位|职位)[:：]/g)?.length ?? 0;
+  if (explicitTitleCount > 1) return explicitTitleCount;
+
+  const separatedBlocks = normalized
+    .split(/\n\s*\n/g)
+    .map((block) => block.trim())
+    .filter((block) => /(岗位职责|职位描述|工作职责|岗位要求|任职要求|薪资|[0-9]{1,3}\s*[-~—到]\s*[0-9]{1,3}\s*[kK千])/.test(block));
+
+  return Math.max(1, separatedBlocks.length);
+}
+
 function App() {
   const [input, setInput] = useState('');
   const [submittedText, setSubmittedText] = useState('');
@@ -136,8 +152,13 @@ function App() {
 
   const handleAnalyze = () => {
     if (!input.trim()) {
-      setError('请先粘贴至少一条 AI 产品经理岗位详情。');
+      window.alert('请先粘贴岗位详情！');
       setSubmittedText('');
+      return;
+    }
+    const jobCount = estimateJobCount(input);
+    if (jobCount > maxJobCount) {
+      window.alert('一次最多支持粘贴50个岗位信息，请删减后再分析。');
       return;
     }
     setError('');
@@ -367,10 +388,6 @@ function InputPanel({
     <section className={`input-card ${compact ? 'input-card--compact' : ''}`}>
       <div className="section-heading">
         <div>
-          <p className="eyebrow">
-            <FileText size={14} />
-            岗位详情输入区
-          </p>
           <h2>粘贴 BOSS 直聘等平台的岗位正文</h2>
         </div>
         <button className="ghost-button" type="button" onClick={onUseSample}>
@@ -381,11 +398,12 @@ function InputPanel({
       <textarea
         value={input}
         onChange={(event) => onInputChange(event.target.value)}
-        placeholder="请粘贴岗位名称、薪资、岗位职责、岗位要求等正文内容。&#10;支持一次粘贴多个岗位。"
+        placeholder={`1. 请粘贴岗位名称、薪资、岗位介绍等内容。可见使用示例
+2. 一次最多支持粘贴50个岗位信息
+3. 岗位与岗位之间需保留 1 行空白间距，用于区隔不同职位信息`}
         aria-label="岗位详情正文"
       />
       <div className="input-actions">
-        <p className={error ? 'error-text' : 'hint-text'}>{error || 'MVP 仅分析岗位正文，不读取招聘链接。'}</p>
         <button className="primary-button" type="button" onClick={onAnalyze}>
           <Search size={16} />
           {compact ? '重新分析' : '开始分析'}
@@ -471,7 +489,7 @@ function ProfileModal({
             </SegmentGrid>
           </ProfileOptionGroup>
 
-          <ProfileOptionGroup icon={<Sparkles size={15} />} title="过往产品类型（可多选）">
+          <ProfileOptionGroup icon={<Sparkles size={15} />} title="过往产品类型（多选）">
             <CheckGrid>
               {profileOptions.previousDomains.map((option) => (
                 <CheckOption
