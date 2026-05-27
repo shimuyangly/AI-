@@ -268,13 +268,12 @@ function App() {
       {result ? (
         <>
           <section className="metric-grid" aria-label="数据概览">
-            <MetricCard icon={<BriefcaseBusiness size={22} />} label="岗位数量" value={`${result.jobCount}`} note="已分析" />
-            <MetricCard icon={<LineChart size={22} />} label="平均薪资" value={averageSalary} note={`${result.parsedSalaryCount} 个岗位可解析`} />
+            <MetricCard icon={<BriefcaseBusiness size={22} />} label="岗位数量" value={`${result.jobCount}`} />
+            <MetricCard icon={<LineChart size={22} />} label="平均薪资" value={averageSalary} />
             <MetricCard
               icon={<Gauge size={22} />}
               label="用户画像匹配度"
               value={`${topMatch}%`}
-              note="较高匹配，适合转型 AI PM"
               showRing
             />
           </section>
@@ -587,13 +586,11 @@ function CheckOption({ checked, label, onClick }: { checked: boolean; label: str
 function MetricCard({
   icon,
   label,
-  note,
   showRing,
   value,
 }: {
   icon: React.ReactNode;
   label: string;
-  note: string;
   showRing?: boolean;
   value: string;
 }) {
@@ -603,7 +600,6 @@ function MetricCard({
       <div>
         <p>{label}</p>
         <strong>{value}</strong>
-        <span>{note}</span>
       </div>
       {showRing ? <span className="metric-ring" aria-hidden /> : null}
     </article>
