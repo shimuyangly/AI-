@@ -656,9 +656,11 @@ textarea:focus {
 }
 
 .ability-head {
+  display: flex;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 10px;
-  margin-bottom: 7px;
+  margin-bottom: 8px;
 }
 
 .ability-head h3,
@@ -667,18 +669,8 @@ textarea:focus {
   font-size: 15px;
 }
 
-.ability-head span {
-  flex: 0 0 auto;
-  padding: 4px 8px;
-  border-radius: 999px;
-  color: var(--green);
-  background: var(--green-soft);
-  font-size: 12px;
-  font-weight: 800;
-}
-
 .star-row {
-  margin-bottom: 8px;
+  flex: 0 0 auto;
   color: var(--green);
   font-size: 13px;
   letter-spacing: 0;

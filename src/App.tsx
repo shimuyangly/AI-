@@ -622,29 +622,41 @@ function KeywordCard({ id, keywords }: { id: string; keywords: KeywordStat[] }) 
 }
 
 function AbilityCard({ abilities, id }: { abilities: AbilityRequirement[]; id: string }) {
+  const maxAbilityCount = Math.max(...abilities.map((ability) => ability.count), 1);
+
   return (
     <article className="card equal-height-card" id={id}>
       <CardTitle icon={<CheckCircle2 size={18} />} title="候选人核心能力要求" />
       {abilities.length ? (
         <div className="ability-list scrollable-card-body">
-          {abilities.slice(0, 6).map((ability) => (
-            <div className="ability-item" key={ability.name}>
-              <div className="ability-head">
-                <h3>{ability.name}</h3>
-                <span>匹配度高</span>
+          {abilities.slice(0, 6).map((ability, index) => {
+            const frequencyScore = Math.max(2, Math.ceil((ability.count / maxAbilityCount) * 5));
+            const rankCap = index < 2 ? 5 : index < 4 ? 4 : 3;
+            const score = Math.min(frequencyScore, rankCap);
+            return (
+              <div className="ability-item" key={ability.name}>
+                <div className="ability-head">
+                  <h3>{ability.name}</h3>
+                  <StarRating score={score} />
+                </div>
+                <p>{ability.description}</p>
               </div>
-              <div className="star-row" aria-label="能力重要度">
-                <span>★★★★</span>
-                <em>★</em>
-              </div>
-              <p>{ability.description}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <EmptyCardText text="当前文本更像普通产品岗位，建议补充 AI 相关职责后再分析。" />
       )}
     </article>
+  );
+}
+
+function StarRating({ score }: { score: number }) {
+  return (
+    <div className="star-row" aria-label={`能力要求强度 ${score} 星`}>
+      <span>{'★'.repeat(score)}</span>
+      <em>{'★'.repeat(5 - score)}</em>
+    </div>
   );
 }
 
