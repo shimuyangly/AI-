@@ -11,8 +11,9 @@ import type {
 export const defaultProfile: CandidateProfile = {
   workExperience: '1-3年',
   yearsExperience: 2,
-  aiExperience: '有相关经验',
-  previousDomains: ['工具类产品', '出行类产品'],
+  education: '本科',
+  productExperience: '有',
+  previousDomains: ['工具类', '出行 / 交通'],
   familiarTech: ['AI 大模型（LLM）', 'RAG / 知识库'],
   strengths: ['原型设计', '数据分析'],
   targetRole: 'AI 产品经理',

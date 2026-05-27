@@ -1,7 +1,8 @@
 export interface CandidateProfile {
   workExperience: string;
   yearsExperience: number;
-  aiExperience: string;
+  education: string;
+  productExperience: string;
   previousDomains: string[];
   familiarTech: string[];
   strengths: string[];

@@ -377,8 +377,12 @@ textarea:focus {
 }
 
 .profile-option-group {
-  min-height: 214px;
+  display: flex;
+  flex-direction: column;
+  height: 238px;
+  min-height: 238px;
   padding: 18px;
+  overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #fbfdfc;
@@ -423,6 +427,23 @@ textarea:focus {
 .check-grid {
   display: grid;
   gap: 10px;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.check-grid::-webkit-scrollbar {
+  width: 7px;
+}
+
+.check-grid::-webkit-scrollbar-track {
+  background: #edf4ef;
+  border-radius: 999px;
+}
+
+.check-grid::-webkit-scrollbar-thumb {
+  background: #b8c9bf;
+  border-radius: 999px;
 }
 
 .check-option {
@@ -455,17 +476,6 @@ textarea:focus {
 .check-option.checked span {
   border-color: var(--green);
   background: var(--green);
-}
-
-.role-list {
-  display: grid;
-  gap: 10px;
-}
-
-.role-list .option-button {
-  justify-content: flex-start;
-  padding: 0 16px;
-  text-align: left;
 }
 
 .modal-actions {

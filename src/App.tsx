@@ -47,20 +47,76 @@ const tabs = [
 const tabTargetIds = tabs.map((tab) => tab.targetId);
 
 const profileOptions = {
-  workExperience: ['应届/实习', '1年以内', '1-3年', '3-5年', '5年以上'],
-  aiExperience: ['无经验', '有相关经验'],
-  previousDomains: ['工具类产品', '内容 / 社区', '电商 / 交易', '生活服务', '企业服务 / SaaS', '教育 / 其他'],
-  familiarTech: ['AI 大模型（LLM）', 'RAG / 知识库', 'Agent / 智能体', '数据分析 / BI', '推荐算法', '计算机视觉', '自然语言处理'],
-  strengths: ['需求分析', '产品设计', '原型设计', '项目管理', '数据分析', '增长 / 运营', '商业化 / 盈利设计'],
-  targetRole: ['AI 产品经理', '产品经理（AI 方向）', '产品经理', '其他'],
+  workExperience: ['1年以内', '1-3年', '3-5年', '应届生', '实习生'],
+  education: ['大专', '本科', '硕士'],
+  productExperience: ['有', '无'],
+  previousDomains: [
+    '工具类',
+    '内容 / 社区',
+    '电商',
+    '金融',
+    '生活服务',
+    '教育',
+    'SaaS',
+    '企业服务',
+    '出行 / 交通',
+    '本地生活',
+    '医疗健康',
+    '游戏 / 娱乐',
+    '广告 / 增长',
+    '数据平台',
+    '开放平台',
+    '硬件 / IoT',
+    '政企 / 行业解决方案',
+    '其他',
+  ],
+  familiarTech: [
+    'AI 大模型（LLM）',
+    'Prompt 工程',
+    'RAG / 知识库',
+    'Agent / 智能体',
+    '工作流编排',
+    '多模态',
+    '数据分析 / BI',
+    'A/B 测试',
+    '推荐算法',
+    '搜索 / 召回',
+    '自然语言处理',
+    '计算机视觉',
+    '语音识别 / TTS',
+    '埋点 / 指标体系',
+    'API / OpenAPI',
+    'SQL',
+    '低代码 / 无代码',
+  ],
+  strengths: [
+    '需求分析',
+    '用户调研',
+    '竞品分析',
+    '产品设计',
+    '原型设计',
+    'PRD 撰写',
+    '项目管理',
+    '跨部门沟通',
+    '数据分析',
+    '指标体系',
+    '增长 / 运营',
+    '商业化 / 盈利设计',
+    'B 端交付',
+    'C 端体验',
+    '模型评测',
+    'Prompt 调优',
+    '知识库设计',
+    '面试表达',
+  ],
 };
 
 function yearsFromWorkExperience(workExperience: string): number {
-  if (workExperience === '应届/实习') return 0;
+  if (workExperience === '应届生' || workExperience === '实习生') return 0;
   if (workExperience === '1年以内') return 1;
   if (workExperience === '1-3年') return 2;
   if (workExperience === '3-5年') return 4;
-  return 5;
+  return 2;
 }
 
 function App() {
@@ -162,8 +218,9 @@ function App() {
   const saveProfile = () => {
     setProfile({
       ...draftProfile,
+      targetRole: 'AI 产品经理',
       yearsExperience: yearsFromWorkExperience(draftProfile.workExperience),
-      representativeProject: draftProfile.previousDomains.includes('出行类产品') || draftProfile.previousDomains.includes('工具类产品')
+      representativeProject: draftProfile.previousDomains.includes('出行 / 交通') || draftProfile.previousDomains.includes('工具类')
         ? '车来了 App'
         : `${draftProfile.previousDomains[0] ?? '过往'}项目`,
     });
@@ -265,9 +322,9 @@ function HeaderSection({ onEditProfile, profile }: { onEditProfile: () => void; 
 function ProfileCard({ onEditProfile, profile }: { onEditProfile: () => void; profile: CandidateProfile }) {
   const profileItems = [
     { icon: <UserRound size={18} />, label: '产品经验', value: profile.workExperience },
-    { icon: <Bot size={18} />, label: 'AI 产品经验', value: profile.aiExperience },
+    { icon: <Gauge size={18} />, label: '学历背景', value: profile.education },
+    { icon: <Bot size={18} />, label: '产品经验', value: profile.productExperience },
     { icon: <BriefcaseBusiness size={18} />, label: '过往产品类型', value: profile.previousDomains.join(' / ') || '未选择' },
-    { icon: <Target size={18} />, label: '期望职位', value: profile.targetRole },
   ];
 
   return (
@@ -349,7 +406,7 @@ function ProfileModal({
   onSave: () => void;
   onUpdate: (profile: CandidateProfile) => void;
 }) {
-  const setSingle = (key: 'workExperience' | 'aiExperience' | 'targetRole', value: string) => {
+  const setSingle = (key: 'workExperience' | 'education' | 'productExperience', value: string) => {
     onUpdate({
       ...draftProfile,
       [key]: value,
@@ -388,14 +445,27 @@ function ProfileModal({
             </SegmentGrid>
           </ProfileOptionGroup>
 
-          <ProfileOptionGroup icon={<Bot size={15} />} title="是否有 AI 产品经验">
-            <SegmentGrid columns={2}>
-              {profileOptions.aiExperience.map((option) => (
+          <ProfileOptionGroup icon={<Gauge size={15} />} title="学历背景">
+            <SegmentGrid columns={3}>
+              {profileOptions.education.map((option) => (
                 <OptionButton
-                  active={draftProfile.aiExperience === option}
+                  active={draftProfile.education === option}
                   key={option}
                   label={option}
-                  onClick={() => setSingle('aiExperience', option)}
+                  onClick={() => setSingle('education', option)}
+                />
+              ))}
+            </SegmentGrid>
+          </ProfileOptionGroup>
+
+          <ProfileOptionGroup icon={<Bot size={15} />} title="有无产品经验">
+            <SegmentGrid columns={2}>
+              {profileOptions.productExperience.map((option) => (
+                <OptionButton
+                  active={draftProfile.productExperience === option}
+                  key={option}
+                  label={option}
+                  onClick={() => setSingle('productExperience', option)}
                 />
               ))}
             </SegmentGrid>
@@ -414,7 +484,7 @@ function ProfileModal({
             </CheckGrid>
           </ProfileOptionGroup>
 
-          <ProfileOptionGroup icon={<Cpu size={15} />} title="熟悉的技术 / 领域（可多选）">
+          <ProfileOptionGroup icon={<Cpu size={15} />} title="熟悉的技术（多选）">
             <CheckGrid>
               {profileOptions.familiarTech.map((option) => (
                 <CheckOption
@@ -427,7 +497,7 @@ function ProfileModal({
             </CheckGrid>
           </ProfileOptionGroup>
 
-          <ProfileOptionGroup icon={<Gauge size={15} />} title="擅长的产品模块（可多选）">
+          <ProfileOptionGroup icon={<Target size={15} />} title="擅长的技能（多选）">
             <CheckGrid>
               {profileOptions.strengths.map((option) => (
                 <CheckOption
@@ -440,18 +510,6 @@ function ProfileModal({
             </CheckGrid>
           </ProfileOptionGroup>
 
-          <ProfileOptionGroup icon={<Target size={15} />} title="期望职位">
-            <div className="role-list">
-              {profileOptions.targetRole.map((option) => (
-                <OptionButton
-                  active={draftProfile.targetRole === option}
-                  key={option}
-                  label={option}
-                  onClick={() => setSingle('targetRole', option)}
-                />
-              ))}
-            </div>
-          </ProfileOptionGroup>
         </div>
 
         <footer className="modal-actions">
