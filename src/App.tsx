@@ -18,7 +18,14 @@ import {
   X,
 } from 'lucide-react';
 import { analyzeJobDescriptions, defaultProfile } from './analysis';
-import type { AbilityRequirement, AnalysisResult, CandidateProfile, KeywordStat, ProjectRecommendation } from './types';
+import type {
+  AbilityAnalysisItem,
+  AbilityRequirement,
+  AnalysisResult,
+  CandidateProfile,
+  InterviewFocusItem,
+  KeywordStat,
+} from './types';
 
 const sampleInput = `岗位名称：AI 数据产品经理
 薪资：20-30K
@@ -39,8 +46,9 @@ const sampleInput = `岗位名称：AI 数据产品经理
 const tabs = [
   { label: 'Top关键词', targetId: 'top-keywords' },
   { label: '能力要求', targetId: 'core-abilities' },
-  { label: '项目推荐', targetId: 'profile-projects' },
-  { label: '市场洞察', targetId: 'market-insights' },
+  { label: '能力分析', targetId: 'ability-analysis' },
+  { label: '面试重点', targetId: 'interview-focus' },
+  { label: '岗位洞察', targetId: 'market-insights' },
   { label: '求职建议', targetId: 'job-advice' },
 ];
 
@@ -191,7 +199,7 @@ function App() {
       const documentHeight = document.documentElement.scrollHeight;
       if (pageBottom >= documentHeight - 8) return 'job-advice';
 
-      const sectionPositions = [...tabTargetIds, 'general-projects']
+      const sectionPositions = tabTargetIds
         .map((id) => {
           const element = document.getElementById(id);
           if (!element) return null;
@@ -207,7 +215,7 @@ function App() {
         if (!closest) return section;
         return Math.abs(section.top - anchorLine) < Math.abs(closest.top - anchorLine) ? section : closest;
       }, sectionPositions[0]);
-      return current?.id === 'general-projects' ? 'profile-projects' : current?.id;
+      return current?.id;
     };
 
     const handleScroll = () => {
@@ -241,9 +249,6 @@ function App() {
       ...draftProfile,
       targetRole: 'AI 产品经理',
       yearsExperience: yearsFromWorkExperience(draftProfile.workExperience),
-      representativeProject: draftProfile.previousDomains.includes('出行 / 交通') || draftProfile.previousDomains.includes('工具类')
-        ? '车来了 App'
-        : `${draftProfile.previousDomains[0] ?? '过往'}项目`,
     });
     setIsProfileModalOpen(false);
   };
@@ -285,9 +290,9 @@ function App() {
           <section className="dashboard-grid">
             <KeywordCard id="top-keywords" keywords={result.topKeywords} />
             <AbilityCard id="core-abilities" abilities={result.abilityRequirements} />
-            <ProjectCard id="profile-projects" title="基于画像项目推荐" subtitle="与岗位能力精准相关" projects={result.profileBasedProjectRecommendations} />
-            <ProjectCard id="general-projects" title="综合项目推荐" subtitle="小白友好，进阶挑战" projects={result.generalProjectRecommendations} />
-            <ListCard id="market-insights" icon={<Lightbulb size={18} />} title="市场洞察" items={result.marketInsights} />
+            <AbilityAnalysisCard id="ability-analysis" items={result.abilityAnalysis} />
+            <InterviewFocusCard id="interview-focus" items={result.interviewFocus} />
+            <ListCard id="market-insights" icon={<Lightbulb size={18} />} title="岗位洞察" items={result.marketInsights} />
             <ListCard id="job-advice" icon={<Target size={18} />} title="求职建议" items={result.jobSearchAdvice} />
           </section>
         </>
@@ -297,7 +302,6 @@ function App() {
 
       <footer className="app-footer">
         <span>内容由 AI 生成，仅供参考</span>
-        <span>有反馈？告诉我们</span>
       </footer>
       {isProfileModalOpen ? (
         <ProfileModal
@@ -332,7 +336,7 @@ function HeaderSection({ onEditProfile, profile }: { onEditProfile: () => void; 
 
 function ProfileCard({ onEditProfile, profile }: { onEditProfile: () => void; profile: CandidateProfile }) {
   const profileItems = [
-    { icon: <UserRound size={18} />, label: '产品经验', value: profile.workExperience },
+    { icon: <UserRound size={18} />, label: '工作年限', value: profile.workExperience },
     { icon: <Gauge size={18} />, label: '学历背景', value: profile.education },
     { icon: <Bot size={18} />, label: '产品经验', value: profile.productExperience },
     { icon: <BriefcaseBusiness size={18} />, label: '过往产品类型', value: profile.previousDomains.join(' / ') || '未选择' },
@@ -651,52 +655,75 @@ function AbilityCard({ abilities, id }: { abilities: AbilityRequirement[]; id: s
   );
 }
 
+function AbilityAnalysisCard({ id, items }: { id: string; items: AbilityAnalysisItem[] }) {
+  return (
+    <article className="card insight-card" id={id}>
+      <CardTitle icon={<Gauge size={18} />} title="能力分析" />
+      {items.length ? (
+        <div className="analysis-list scrollable-card-body">
+          {items.map((item) => (
+            <section className="analysis-item" key={item.name}>
+              <div className="analysis-item-head">
+                <h3>{item.name}</h3>
+                <span className={`status-pill status-${item.status}`}>{item.status}</span>
+              </div>
+              <p>{item.reason}</p>
+              <div className="mini-meta">
+                <span>优先级：{item.priority}</span>
+                <span>依据：{item.evidence.join('、') || '岗位要求'}</span>
+              </div>
+              <ul>
+                {item.actions.slice(0, 2).map((action) => (
+                  <li key={action}>{action}</li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
+      ) : (
+        <EmptyCardText text="暂未形成能力差距判断，请补充更完整的岗位要求。" />
+      )}
+    </article>
+  );
+}
+
+function InterviewFocusCard({ id, items }: { id: string; items: InterviewFocusItem[] }) {
+  return (
+    <article className="card insight-card" id={id}>
+      <CardTitle icon={<ClipboardList size={18} />} title="面试重点" />
+      {items.length ? (
+        <div className="analysis-list scrollable-card-body">
+          {items.map((item) => (
+            <section className="analysis-item" key={`${item.category}-${item.title}`}>
+              <div className="analysis-item-head">
+                <h3>{item.title}</h3>
+                <span className="status-pill status-interview">{item.category}</span>
+              </div>
+              <p>{item.detail}</p>
+              <div className="mini-meta">
+                <span>优先级：{item.priority}</span>
+              </div>
+              <ul>
+                {item.talkingPoints.map((point) => (
+                  <li key={point}>{point}</li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
+      ) : (
+        <EmptyCardText text="暂未形成面试准备重点，请先完成岗位分析。" />
+      )}
+    </article>
+  );
+}
+
 function StarRating({ score }: { score: number }) {
   return (
     <div className="star-row" aria-label={`能力要求强度 ${score} 星`}>
       <span>{'★'.repeat(score)}</span>
       <em>{'★'.repeat(5 - score)}</em>
     </div>
-  );
-}
-
-function ProjectCard({
-  id,
-  projects,
-  subtitle,
-  title,
-}: {
-  id: string;
-  projects: ProjectRecommendation[];
-  subtitle: string;
-  title: string;
-}) {
-  return (
-    <article className="card equal-height-card" id={id}>
-      <CardTitle icon={<Sparkles size={18} />} title={title} />
-      <div className="project-tabs">
-        <span className="active">{subtitle}</span>
-        <span>{title.includes('综合') ? '进阶挑战' : '跨领域推荐'}</span>
-      </div>
-      <div className="project-list scrollable-card-body">
-        {projects.map((project) => (
-          <section className="project-item" key={project.title}>
-            <h3>{project.title}</h3>
-            <div className="tag-row">
-              {project.matchedAbilities.slice(0, 3).map((ability) => (
-                <span key={ability}>{ability}</span>
-              ))}
-            </div>
-            <p>{project.reason}</p>
-            <ul>
-              {project.deliverables.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </section>
-        ))}
-      </div>
-    </article>
   );
 }
 
@@ -728,7 +755,7 @@ function EmptyState() {
         <span />
       </div>
       <h2>等待岗位内容</h2>
-      <p>粘贴 JD 后，系统会生成关键词、能力要求、市场洞察、项目推荐和求职建议。</p>
+      <p>粘贴 JD 后，系统会生成关键词、能力要求、岗位洞察和求职建议。</p>
       <div className="empty-steps" aria-label="分析流程">
         {steps.map((step, index) => (
           <div className="empty-step" key={step.label}>

@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "AI求职助手 - BOSS岗位复制器",
+  "version": "0.1.0",
+  "description": "在 BOSS 直聘岗位详情页复制当前可见岗位内容，并支持暂存多个岗位后批量导出。",
+  "permissions": ["clipboardWrite", "storage"],
+  "content_scripts": [
+    {
+      "matches": ["*://*.zhipin.com/*"],
+      "js": ["content.js"],
+      "css": ["styles.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}

@@ -7,7 +7,6 @@ export interface CandidateProfile {
   familiarTech: string[];
   strengths: string[];
   targetRole: string;
-  representativeProject: string;
 }
 
 export interface SalaryInfo {
@@ -32,8 +31,27 @@ export interface AbilityRequirement {
   evidence: string[];
 }
 
+export interface AbilityAnalysisItem {
+  name: string;
+  status: '优势能力' | '可迁移能力' | '重点补齐';
+  priority: '高' | '中' | '低';
+  score: number;
+  reason: string;
+  actions: string[];
+  evidence: string[];
+}
+
+export interface InterviewFocusItem {
+  title: string;
+  category: '必备问题' | '案例包装' | '短板补救' | '临时补课';
+  priority: '高' | '中' | '低';
+  detail: string;
+  talkingPoints: string[];
+}
+
 export interface ProjectRecommendation {
   title: string;
+  level?: string;
   reason: string;
   deliverables: string[];
   matchedAbilities: string[];
@@ -55,6 +73,8 @@ export interface AnalysisResult {
   parsedSalaryCount: number;
   topKeywords: KeywordStat[];
   abilityRequirements: AbilityRequirement[];
+  abilityAnalysis: AbilityAnalysisItem[];
+  interviewFocus: InterviewFocusItem[];
   profileBasedProjectRecommendations: ProjectRecommendation[];
   generalProjectRecommendations: ProjectRecommendation[];
   marketInsights: string[];
