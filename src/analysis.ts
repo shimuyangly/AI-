@@ -127,7 +127,7 @@ const abilityProfileSignals: Record<string, {
 }> = {
   'RAG / 知识库': {
     tech: ['RAG / 知识库', '搜索 / 召回', '自然语言处理', 'AI 大模型（LLM）'],
-    strengths: ['模型评测', '需求分析', '产品设计'],
+    strengths: ['需求分析', '产品设计'],
     domains: ['工具类', 'SaaS', '企业服务', '教育', '政企 / 行业解决方案'],
   },
   'Prompt 工程': {
@@ -146,8 +146,8 @@ const abilityProfileSignals: Record<string, {
     domains: ['工具类', '出行 / 交通', '生活服务', '内容 / 社区', '企业服务'],
   },
   模型评测: {
-    tech: ['数据分析 / BI', 'A/B 测试', '埋点 / 指标体系', 'SQL'],
-    strengths: ['模型评测', '数据分析', '指标体系'],
+    tech: ['模型评测', '数据分析 / BI', 'A/B 测试', '埋点 / 指标体系', 'SQL'],
+    strengths: ['数据分析', '指标体系'],
     domains: ['数据平台', '工具类', 'SaaS', '企业服务'],
   },
   数据分析: {
@@ -204,8 +204,8 @@ function buildProfileProjectCandidates(
     abilitySignals: ['RAG / 知识库', 'AI 应用设计', '模型评测'],
     keywordSignals: ['RAG', '问答', 'LLM', '模型评测'],
     domainSignals: ['工具类', '教育', 'SaaS', '企业服务', '出行 / 交通', '政企 / 行业解决方案'],
-    techSignals: ['RAG / 知识库', 'AI 大模型（LLM）', '搜索 / 召回', '自然语言处理', '低代码 / 无代码'],
-    strengthSignals: ['需求分析', '产品设计', '原型设计', '模型评测'],
+    techSignals: ['RAG / 知识库', 'AI 大模型（LLM）', '搜索 / 召回', '自然语言处理', '低代码 / 无代码', '模型评测'],
+    strengthSignals: ['需求分析', '产品设计', '原型设计'],
     complexity: 2,
     matchedAbilities: ['RAG / 知识库', 'AI 应用设计', '模型评测'],
     profileReason: ({ domainText, evidenceText, techText, complexityText }) =>
@@ -244,8 +244,8 @@ function buildProfileProjectCandidates(
     abilitySignals: ['数据分析', '模型评测', '产品方法论'],
     keywordSignals: ['数据分析', '模型评测', 'A/B 测试'],
     domainSignals: ['数据平台', '广告 / 增长', '电商', '内容 / 社区', '金融'],
-    techSignals: ['数据分析 / BI', 'A/B 测试', '埋点 / 指标体系', 'SQL'],
-    strengthSignals: ['数据分析', '指标体系', '模型评测', '增长 / 运营', 'PRD 撰写'],
+    techSignals: ['模型评测', '数据分析 / BI', 'A/B 测试', '埋点 / 指标体系', 'SQL'],
+    strengthSignals: ['数据分析', '指标体系', '增长 / 运营', 'PRD 撰写'],
     complexity: 2,
     matchedAbilities: ['数据分析', '模型评测', '产品方法论'],
     profileReason: ({ evidenceText, strengthText, complexityText }) =>
@@ -304,8 +304,8 @@ function buildProfileProjectCandidates(
     abilitySignals: ['AI 应用设计', '模型评测', 'B 端产品'],
     keywordSignals: ['问答', '模型评测', 'B 端', 'LLM'],
     domainSignals: ['企业服务', 'SaaS', '生活服务', '电商', '金融'],
-    techSignals: ['AI 大模型（LLM）', '自然语言处理', '数据分析 / BI'],
-    strengthSignals: ['B 端交付', '模型评测', '数据分析', '项目管理'],
+    techSignals: ['AI 大模型（LLM）', '自然语言处理', '模型评测', '数据分析 / BI'],
+    strengthSignals: ['B 端交付', '数据分析', '项目管理'],
     complexity: 3,
     matchedAbilities: ['AI 应用设计', '模型评测', 'B 端产品'],
     profileReason: ({ domainText, evidenceText, complexityText }) =>
@@ -324,8 +324,8 @@ function buildProfileProjectCandidates(
     abilitySignals: ['AI 应用设计', '多模态', '模型评测'],
     keywordSignals: ['多模态', 'LLM', '模型评测'],
     domainSignals: ['内容 / 社区', '游戏 / 娱乐', '教育', '医疗健康'],
-    techSignals: ['多模态', '自然语言处理', '计算机视觉', 'AI 大模型（LLM）'],
-    strengthSignals: ['用户调研', '产品设计', '模型评测', 'C 端体验'],
+    techSignals: ['多模态', '自然语言处理', '计算机视觉', 'AI 大模型（LLM）', '模型评测'],
+    strengthSignals: ['用户调研', '产品设计', 'C 端体验'],
     complexity: 2,
     matchedAbilities: ['AI 应用设计', '模型评测'],
     profileReason: ({ domainText, evidenceText, complexityText }) =>
@@ -344,8 +344,8 @@ function buildProfileProjectCandidates(
     abilitySignals: ['RAG / 知识库', 'AI 应用设计', '模型评测'],
     keywordSignals: ['RAG', 'LLM', '模型评测', '问答'],
     domainSignals: ['企业服务', 'SaaS', '教育', '其他'],
-    techSignals: ['RAG / 知识库', 'AI 大模型（LLM）', '自然语言处理'],
-    strengthSignals: ['需求分析', '数据分析', '模型评测', 'B 端交付'],
+    techSignals: ['RAG / 知识库', 'AI 大模型（LLM）', '自然语言处理', '模型评测'],
+    strengthSignals: ['需求分析', '数据分析', 'B 端交付'],
     complexity: 2,
     matchedAbilities: ['RAG / 知识库', 'AI 应用设计', '模型评测'],
     profileReason: ({ evidenceText, complexityText }) =>
