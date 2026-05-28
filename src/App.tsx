@@ -82,6 +82,7 @@ const profileOptions = {
   familiarTech: [
     'AI 大模型（LLM）',
     'Prompt 工程',
+    'Prompt 调优',
     'RAG / 知识库',
     'Agent / 智能体',
     '工作流编排',
@@ -114,9 +115,6 @@ const profileOptions = {
     'B 端交付',
     'C 端体验',
     '模型评测',
-    'Prompt 调优',
-    '知识库设计',
-    '面试表达',
   ],
 };
 

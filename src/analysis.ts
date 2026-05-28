@@ -127,12 +127,12 @@ const abilityProfileSignals: Record<string, {
 }> = {
   'RAG / 知识库': {
     tech: ['RAG / 知识库', '搜索 / 召回', '自然语言处理', 'AI 大模型（LLM）'],
-    strengths: ['知识库设计', '模型评测', '需求分析'],
+    strengths: ['模型评测', '需求分析', '产品设计'],
     domains: ['工具类', 'SaaS', '企业服务', '教育', '政企 / 行业解决方案'],
   },
   'Prompt 工程': {
-    tech: ['Prompt 工程', 'AI 大模型（LLM）', '低代码 / 无代码'],
-    strengths: ['Prompt 调优', '产品设计', '需求分析'],
+    tech: ['Prompt 工程', 'Prompt 调优', 'AI 大模型（LLM）', '低代码 / 无代码'],
+    strengths: ['产品设计', '需求分析', 'PRD 撰写'],
     domains: ['工具类', '内容 / 社区', '教育', '企业服务'],
   },
   'Agent 产品设计': {
@@ -205,7 +205,7 @@ function buildProfileProjectCandidates(
     keywordSignals: ['RAG', '问答', 'LLM', '模型评测'],
     domainSignals: ['工具类', '教育', 'SaaS', '企业服务', '出行 / 交通', '政企 / 行业解决方案'],
     techSignals: ['RAG / 知识库', 'AI 大模型（LLM）', '搜索 / 召回', '自然语言处理', '低代码 / 无代码'],
-    strengthSignals: ['知识库设计', '需求分析', '产品设计', '原型设计', '模型评测'],
+    strengthSignals: ['需求分析', '产品设计', '原型设计', '模型评测'],
     complexity: 2,
     matchedAbilities: ['RAG / 知识库', 'AI 应用设计', '模型评测'],
     profileReason: ({ domainText, evidenceText, techText, complexityText }) =>
@@ -224,8 +224,8 @@ function buildProfileProjectCandidates(
     abilitySignals: ['Agent 产品设计', 'Prompt 工程', '项目推进'],
     keywordSignals: ['Agent', 'Prompt', '工作流', 'LLM'],
     domainSignals: ['工具类', '企业服务', 'SaaS', '开放平台', '数据平台'],
-    techSignals: ['Agent / 智能体', 'Prompt 工程', '工作流编排', 'API / OpenAPI', 'AI 大模型（LLM）'],
-    strengthSignals: ['需求分析', '产品设计', '项目管理', '跨部门沟通', 'Prompt 调优'],
+    techSignals: ['Agent / 智能体', 'Prompt 工程', 'Prompt 调优', '工作流编排', 'API / OpenAPI', 'AI 大模型（LLM）'],
+    strengthSignals: ['需求分析', '产品设计', '项目管理', '跨部门沟通'],
     complexity: 3,
     matchedAbilities: ['Agent 产品设计', 'Prompt 工程', '项目推进'],
     profileReason: ({ domainText, evidenceText, techText, complexityText }) =>
@@ -364,8 +364,8 @@ function buildProfileProjectCandidates(
     abilitySignals: ['RAG / 知识库', 'Prompt 工程', 'AI 应用设计'],
     keywordSignals: ['RAG', 'Prompt', '问答', 'LLM'],
     domainSignals: ['教育', '内容 / 社区', '工具类'],
-    techSignals: ['RAG / 知识库', 'Prompt 工程', 'AI 大模型（LLM）'],
-    strengthSignals: ['用户调研', '产品设计', '知识库设计', 'Prompt 调优'],
+    techSignals: ['RAG / 知识库', 'Prompt 工程', 'Prompt 调优', 'AI 大模型（LLM）'],
+    strengthSignals: ['用户调研', '产品设计', '需求分析'],
     complexity: 2,
     matchedAbilities: ['RAG / 知识库', 'Prompt 工程', 'AI 应用设计'],
     profileReason: ({ domainText, evidenceText, complexityText }) =>
@@ -405,7 +405,7 @@ function buildProfileProjectCandidates(
     keywordSignals: ['需求分析', 'LLM', '数据分析'],
     domainSignals: ['工具类', '内容 / 社区', '生活服务', '出行 / 交通', '教育', '其他'],
     techSignals: ['低代码 / 无代码', 'AI 大模型（LLM）'],
-    strengthSignals: ['PRD 撰写', '原型设计', '面试表达', '需求分析'],
+    strengthSignals: ['PRD 撰写', '原型设计', '需求分析'],
     complexity: 1,
     matchedAbilities: ['产品方法论', 'AI 应用设计'],
     profileReason: ({ domainText, strengthText, complexityText }) =>
